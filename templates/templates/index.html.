@@ -1,0 +1,77 @@
+
+{% extends "base.html" %}
+{% block title %}Dashboard · StudyFlow{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">STUDENT PRODUCTIVITY</p>
+  <h1>Make room for <span>what matters.</span></h1>
+  <p class="subtitle">Organize your assignments and daily tasks in one place.</p>
+</section>
+
+<section class="stats">
+  <div class="stat-card">All tasks <strong>{{ stats.total }}</strong></div>
+  <div class="stat-card">Pending <strong>{{ stats.pending }}</strong></div>
+  <div class="stat-card">Completed <strong>{{ stats.completed }}</strong></div>
+</section>
+
+<div class="content-grid">
+  <section class="panel">
+    <h2>Add a task</h2>
+    <form action="{{ url_for('add_task') }}" method="post">
+      <p><label>Task title</label>
+      <input name="title" placeholder="Enter a task" required></p>
+
+      <p><label>Description</label>
+      <textarea name="description" placeholder="Task details"></textarea></p>
+
+      <p><label>Priority</label>
+      <select name="priority">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+      </select></p>
+
+      <p><label>Due date</label>
+      <input type="date" name="due_date"></p>
+
+      <button type="submit">Add task</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>My tasks</h2>
+    <form method="get" action="{{ url_for('index') }}">
+      <input name="search" value="{{ search }}" placeholder="Search tasks">
+      <button type="submit">Search</button>
+    </form>
+
+    <p>
+      <a href="{{ url_for('index', status='all') }}">All</a> |
+      <a href="{{ url_for('index', status='pending') }}">Pending</a> |
+      <a href="{{ url_for('index', status='completed') }}">Completed</a>
+    </p>
+
+    {% for task in tasks %}
+    <article class="task-item">
+      <h3>{{ task.title }}</h3>
+      <p>{{ task.description }}</p>
+      <p>Priority: {{ task.priority }}</p>
+      <p>Due date: {{ task.due_date or 'Not set' }}</p>
+      <p>Status: {{ 'Completed' if task.completed else 'Pending' }}</p>
+
+      <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="post">
+        <button type="submit">Change status</button>
+      </form>
+
+      <a href="{{ url_for('edit_task', task_id=task.id) }}">Edit</a>
+
+      <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post">
+        <button type="submit">Delete</button>
+      </form>
+    </article>
+    {% else %}
+    <p>No tasks yet. Add your first task!</p>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}
