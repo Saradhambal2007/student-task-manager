@@ -1,0 +1,45 @@
+
+{% extends "base.html" %}
+{% block title %}Student Task Manager{% endblock %}
+{% block content %}
+<h1>My Student Tasks</h1>
+
+<p>Organize your assignments and daily goals.</p>
+
+<h2>Add a Task</h2>
+<form action="{{ url_for('add_task') }}" method="post">
+  <input name="title" placeholder="Task title" required>
+  <textarea name="description" placeholder="Description"></textarea>
+
+  <select name="priority">
+    <option>Low</option>
+    <option selected>Medium</option>
+    <option>High</option>
+  </select>
+
+  <input type="date" name="due_date">
+  <button type="submit">Add Task</button>
+</form>
+
+<h2>My Tasks</h2>
+{% for task in tasks %}
+  <article>
+    <h3>{{ task.title }}</h3>
+    <p>{{ task.description }}</p>
+    <p>Priority: {{ task.priority }}</p>
+    <p>Status: {{ 'Completed' if task.completed else 'Pending' }}</p>
+
+    <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="post">
+      <button type="submit">Change Status</button>
+    </form>
+
+    <a href="{{ url_for('edit_task', task_id=task.id) }}">Edit</a>
+
+    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post">
+      <button type="submit">Delete</button>
+    </form>
+  </article>
+{% else %}
+  <p>No tasks yet. Add your first task!</p>
+{% endfor %}
+{% endblock %}
